@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:minimal_weather_app/models/weather_model.dart';
-import 'package:minimal_weather_app/services/weather_service.dart';
+import 'package:minimal_weather_app/provider/weather_provider.dart';
+import 'package:provider/provider.dart';
 
 class WeatherPage extends StatefulWidget {
   const WeatherPage({super.key});
@@ -11,22 +11,6 @@ class WeatherPage extends StatefulWidget {
 }
 
 class _WeatherPageState extends State<WeatherPage> {
-  final _weatherService = WeatherService('250f57fa0ea594a62c37add5ca1d638b');
-  Weather? _weather;
-
-  _fetchWeather() async {
-    String cityName = await _weatherService.getCurrentCity();
-
-    try {
-      final weather = await _weatherService.getWeather(cityName);
-      setState(() {
-        _weather = weather;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
   String getWeatherAnimation(String? mainCondition) {
     if (mainCondition == null) return 'assets1/sun.json';
 
@@ -53,44 +37,51 @@ class _WeatherPageState extends State<WeatherPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
-    _fetchWeather();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async {
+        await Provider.of<WeatherProvider>(context, listen: false)
+            .fetchWeather();
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blue[100],
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.location_on,
-              size: 40,
-              color: Colors.grey[500],
-            ),
-            Text(
-              _weather?.cityName ?? 'Loading city..',
-              style: TextStyle(fontSize: 30, color: Colors.grey[500]),
-            ),
-            Lottie.asset(getWeatherAnimation(_weather?.mainCondition)),
-            Text(
-              '${_weather?.temperature.round()}°C',
-              style: TextStyle(fontSize: 30, color: Colors.grey[500]),
-            ),
-            const SizedBox(
-              height: 40,
-            ),
-            Text(
-              _weather?.mainCondition ?? '',
-              style: TextStyle(fontSize: 30, color: Colors.grey[500]),
-            ),
-          ],
+    return Consumer<WeatherProvider>(builder: (context, value, child) {
+      final weatherValue = value.weather;
+
+      return Scaffold(
+        backgroundColor: Colors.blue[100],
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.location_on,
+                size: 40,
+                color: Colors.grey[500],
+              ),
+              Text(
+                weatherValue?.cityName ?? 'Loading city..',
+                style: TextStyle(fontSize: 30, color: Colors.grey[500]),
+              ),
+              Lottie.asset(getWeatherAnimation(weatherValue?.mainCondition)),
+              Text(
+                '${weatherValue?.temperature.round()}°C',
+                style: TextStyle(fontSize: 30, color: Colors.grey[500]),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              Text(
+                weatherValue?.mainCondition ?? '',
+                style: TextStyle(fontSize: 30, color: Colors.grey[500]),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

@@ -4,4 +4,4 @@ Developed a lightweight weather app that utilizes device location to fetch and d
 
 ![Thumbnail](https://drive.google.com/uc?export=view&id=1zTcn3jiYBKElP7Py9aQeM9cqbBM4sk_O)
 
-[![Video Thumbnail]](https://drive.google.com/file/d/10mZkKrlgORP4Jh1YEc7uBm-hbvVvMGxm/view?usp=sharing)
+[![Watch the video]](https://drive.google.com/file/d/10mZkKrlgORP4Jh1YEc7uBm-hbvVvMGxm/view?usp=sharing)
